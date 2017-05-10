@@ -47,10 +47,13 @@ Please execute the default ant target to compile the align_faces tool. The "buil
 ```
 ant build-all
 ```
+git submodule add https://github.com/davisking/dlib.git
+
+
 
 ### Run the pre-build align_faces tool
 
-This dlib-align-faces repository includes three pre-build align_faces binaries under src/main/bin. These binaries are compiled using the optimization options as configured in ant build.xml file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage these instructions for better performance.
+This dlib-align-faces repository includes three pre-build align_faces binaries under src/main/bin. These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage these instructions for better performance.
 
 Please execute the following ant target to run the example:
 ```
@@ -58,7 +61,6 @@ ant run
 ```
 
 Here is JSON output:
-
 ```
 {
 "scale":1,
@@ -80,7 +82,7 @@ Here is JSON output:
 }
 ```
 
-The face chips are saved as jpeg images under the "target" directory with the prefix "g7_summit.jpg.align"
+The face chips are saved as jpeg images under the "target" directory with the file name prefixed as "g7_summit.jpg.align"
 ```
 target/g7_summit.jpg.align.face_0.jpg
 target/g7_summit.jpg.align.face_1.jpg
