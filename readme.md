@@ -4,19 +4,19 @@ The purpose of this project is to provide a tool with the following functions:
 
 1. Detect frontal faces in an image.
 2. Output face chip rectangles/bounding boxes in JSON format to the console.
-3. Align the face chips and save them to the specified destination. The face chips are saved using the given size (both width and height), quality (jpeg image quality) and padding.
+3. Align the face chips and save them to the specified destination.
 
 You can capture the JSON output and read the exported face chips (JPEG images) to integrate with your application.
 
-## How to compile
-
-### Support platforms
+## Support platforms
 
 This tool can be compiled under multiple platforms the same way Dlib C++ library is supported. However, only limited testings are performed under the following platforms:
 
 1. Linux/Ubuntu 14.04: Linux_x86_64
 2. Mac/OSX: mac_x86_64
 3. Windows/Windows 7: windows_x86_64
+
+## How to compile
 
 ### Clone the dlib-align-faces project from github.
 
@@ -47,8 +47,6 @@ Please execute the default ant target to compile the align_faces tool. The "buil
 ```
 ant build-all
 ```
-git submodule add https://github.com/davisking/dlib.git
-
 
 
 ### Run the pre-build align_faces tool
@@ -95,18 +93,13 @@ target/g7_summit.jpg.align.face_7.jpg
 target/g7_summit.jpg.align.face_8.jpg
 ```
 
-
-## Syntax
+### Syntax
 
 ## Credits
 The model files contained in this directory are downloaded and extracted from the dlib-models github repository:
 * [https://github.com/davisking/dlib-models](https://github.com/davisking/dlib-models)
 
-Please refer to the following link for the LICENSE information:
+Please refer to the following link for the LICENSE information for the shape model:
 * [https://github.com/davisking/dlib-models/blob/master/LICENSE](https://github.com/davisking/dlib-models/blob/master/LICENSE)
 
 * [dlib C++ library](https://github.com/davisking/dlib)
-
-[http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2)
-
-ant build-all
