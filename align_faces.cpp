@@ -67,7 +67,7 @@ int main(int argc, char** argv)
             json << "{\n\"code\":1," << endl 
                  << "\"message\":\"";
             json << "Usage: align_faces model imageFile imageSize facePathPrefix pyramidUp padding imageQuality"
-                 << "\"" << endl << "}";
+                 << "\"" << endl << "}" << endl;
             cout << json.str();
             return 0;
         }
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
             long diff = (t2 - t1);
             json << endl << "]," 
                  << endl << "\"time\":" << diff << ","
-                 << endl << "\"code\":0}";            
+                 << endl << "\"code\":0}" << endl;            
 
             dlib::array<array2d<rgb_pixel>> face_chips;
             extract_image_chips(

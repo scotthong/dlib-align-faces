@@ -1,16 +1,16 @@
 # align_faces
 
-The purpose of this project is to provide a tool with the following functions:
+This tool provide the following functions:
 
 1. Detect frontal faces in an image.
 2. Output face chip rectangles/bounding boxes in JSON format to the console.
-3. Align the face chips and save them to the specified destination.
+3. Align the face chips and save them to the specified destination with the given size, padding and quality.
 
-You can capture the JSON output and read the exported face chips (JPEG images) to integrate with your application.
+You can capture the JSON output and read these face chips (JPEG images) to integrate with your application.
 
 ## Support platforms
 
-This tool can be compiled under multiple platforms the same way Dlib C++ library is supported. However, only limited testings are performed under the following platforms:
+This tool supports multiple platforms the same as Dlib C++ library is supported. Limited testings have performed under the following platforms:
 
 1. Linux/Ubuntu 14.04: Linux_x86_64
 2. Mac/OSX: mac_x86_64
@@ -24,41 +24,67 @@ This tool can be compiled under multiple platforms the same way Dlib C++ library
 git clone https://github.com/scotthong/dlib-align-faces.git
 ```
 
-### Install Dlib dependencies
+### [Dlib C++ Library](http://dlib.net) dependencies
 
-The align_faces tool is developed using the [Dlib C++ Library](http://dlib.net). Please refer to the [Dlib website](http://dlib.net) for detailed instructions on how to build [Dlib](http://dlib.net) on your target platform. Please make sure that the required dependencies are installed.
+The align_faces tool is developed based on the [Dlib C++ Library](http://dlib.net). Please refer to the [Dlib website](http://dlib.net) for detailed instructions on how to build [Dlib](http://dlib.net) on your target platform. Please make sure that the required dependencies are installed.
 
 ### Additional dependencies
 
-This project utilize a custom [ANT](http://ant.apache.org/) script to build the align_faces tool. Pease make sure you have the following dependencies installed and configured properly.
+This project utilize a custom [ANT](http://ant.apache.org/) script to build the align_faces tool. Pease make sure you have the following dependencies installed and configured properly for your environment.
 
-1. Java
-2. Ant
+1. [Java](https://www.java.com)
+2. [ANT](http://ant.apache.org/)
 
 ### Compile align_faces
 
-Please execute the default ant target to compile the align_faces tool. The "build-all" ant target will perform the following three operations:
-1. Clone Dlib from github
-2. Checkout Dlib branch v19.4
-3. Update submodule if there is any
-4. Build align_faces using cmake.
-5. Copy align_faces to the corresponding target directory for distribution as pre-compiled binary.
+Please execute the following ant target to compile the align_faces tool.
 
 ```
 ant build-all
 ```
 
+The "build-all" ant target execute the following tasks:
 
-### Run the pre-build align_faces tool
+1. Clone Dlib from github
+2. Checkout Dlib branch v19.4
+3. Update submodule if there is any
+4. Build align_faces using cmake.
+5. Copy align_faces to the corresponding target directory for distribution as pre-build binary.
 
-This dlib-align-faces repository includes three pre-build align_faces binaries under src/main/bin. These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage these instructions for better performance.
+### align_faces command options
+
+align_faces model imageFile imageSize facePathPrefix pyramidUp padding imageQuality
+
+* model: The path to the shape model.
+    * models/shape_predictor_68_face_landmarks.dat
+* imageFile: The path to the image file.
+    * src/test/resources/g7_summit.jpg
+* imageSize: The size of the image (Width and Height).
+    * 160
+* facePathPrefix: The file path prefix of the face chip.
+    * target/g7_summit.jpg.align
+* pyramidUp: Specify whether the image should be scaled up (2x).
+    * false
+* padding: The margin or padding to be added to the face chips.
+    * 0.4
+* imageQuality: The quality value determines how lossy the compression is. Larger quality values result in larger output images but the images will look better.
+    * 75
+
+### Run the pre-build align_faces
+
+This dlib-align-faces repository includes three pre-build align_faces binaries under "src/main/bin". These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage of these instructions for better performance.
 
 Please execute the following ant target to run the example:
 ```
 ant run
 ```
 
-Here is JSON output:
+Or you can execute the command directly on the console.
+```
+align_faces models/shape_predictor_68_face_landmarks.dat src/test/resources/g7_summit.jpg 160 target/g7_summit.jpg.align false 0.4 75
+```
+
+Here is an example of the bounding boxes/rectangles exported as JSON to the console:
 ```
 {
 "scale":1,
@@ -80,7 +106,7 @@ Here is JSON output:
 }
 ```
 
-The face chips are saved as jpeg images under the "target" directory with the file name prefixed as "g7_summit.jpg.align"
+The face chips are saved as JPEG images under the "target" directory with the file name prefixed as "g7_summit.jpg.align".
 ```
 target/g7_summit.jpg.align.face_0.jpg
 target/g7_summit.jpg.align.face_1.jpg
@@ -93,13 +119,6 @@ target/g7_summit.jpg.align.face_7.jpg
 target/g7_summit.jpg.align.face_8.jpg
 ```
 
-### Syntax
-
 ## Credits
-The model files contained in this directory are downloaded and extracted from the dlib-models github repository:
-* [https://github.com/davisking/dlib-models](https://github.com/davisking/dlib-models)
 
-Please refer to the following link for the LICENSE information for the shape model:
-* [https://github.com/davisking/dlib-models/blob/master/LICENSE](https://github.com/davisking/dlib-models/blob/master/LICENSE)
-
-* [dlib C++ library](https://github.com/davisking/dlib)
+The shape model file distributed with this repository is downloaded from the [dlib-models github repository](https://github.com/davisking/dlib-models).
