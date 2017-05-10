@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="dlib-align-faces" default="readme" basedir=".">
+    <property name="project.name" value="align_faces"/>
+    <property name="build.dir" location="target"/>
+    <property name="bin.dir" location="src/main/bin"/>
+    <property name="tag.version" value="v19.4"/>
+
+    <target name="readme">
+        <echo message="This build script provide the following ANT target."/>
+        <echo message="ant build-all : clone Dlib, checkout dlib branch, compile align_faces using cmake"/>
+        <echo message="ant build     : compile align_faces"/>
+        <echo message="ant clean     : clean up the project."/>
+        <echo message="ant run       : run align_faces example using the pre-build binary."/>
+    </target>
+
+    <!-- Only 64-bit OSes are supported. -->
+    <condition property="is_windows_x86_64">
+        <and>
+            <os family="windows" />
+            <and>
+                <os arch="amd64" />
+            </and>
+        </and>
+    </condition>
+
+    <condition property="is_unix_x86_64">
+        <and>
+            <os family="unix" />
+            <and>
+                <os arch="amd64" />
+            </and>
+        </and>
+    </condition>
+
+    <condition property="is_mac_x86_64">
+        <and>
+            <os family="mac" />
+        </and>
+    </condition>
+
+    <!--
+    Build align_faces for the target platform.
+    -->
+    <target name="build-all" depends="dlib, doWindows, doUnix, doMac, build">
+        <echo message="Running OS dependent target" />
+        <echo message="os.name = ${os.name}" />
+        <echo message="os.arch = ${os.arch}" />
+        <echo message="os.version = ${os.version}" />
+
+        <echo message="exe.dir = ${exe.dir}" />
+        <echo message="app.dir = ${app.dir}" />
+        <echo message="app.name = ${app.name}" />
+
+        <mkdir dir="${app.dir}"/>
+        <echo message="copy from ${exe.dir}/${app.name} to ${app.dir}/${app.name}"/>
+        <copy file="${exe.dir}/${app.name}" tofile="${app.dir}/${app.name}"/>
+        <chmod file="${app.dir}/${app.name}" perm="755"/>
+    </target>
+
+    <target name="build">
+        <echo message="building project : ${build.dir}"/>
+        <mkdir dir="${build.dir}"/>
+        <exec executable="cmake" spawn="false">
+            <arg value="--build"/>
+            <arg value="${build.dir}"/>
+            <arg value="--config"/>
+            <arg value="Release"/>
+        </exec>
+    </target>
+
+    <!-- detect and setup platform specific targets -->
+    <target name="doWindows" if="is_windows_x86_64" depends="init-windows">
+        <property name="exe.dir" value="${build.dir}/Release"/>
+        <property name="app.name" value="${project.name}.exe"/>
+        <property name="app.dir" value="${bin.dir}/windows_x86_64"/>
+    </target>
+
+    <target name="doUnix" if="is_unix_x86_64" depends="init-unix">
+        <property name="exe.dir" value="${build.dir}"/>
+        <property name="app.name" value="${project.name}"/>
+        <property name="app.dir" value="${bin.dir}/linux_x86_64"/>
+    </target>
+
+    <target name="doMac" if="is_mac_x86_64" depends="init-unix">
+        <property name="exe.dir" value="${build.dir}"/>
+        <property name="app.name" value="${project.name}"/>
+        <property name="app.dir" value="${bin.dir}/mac_x86_64"/>
+    </target>
+
+    <!-- 
+    Clean up the build directory
+    -->
+    <target name="clean">
+        <echo message="removing directory : ${build.dir}" />
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- 
+    This target will trigger cmake to create the build file for the target platform.
+    Please refer to Dlib (http://dlib.net/) for more in-depth information on how to
+    customize the optimization options.
+    -->
+    <target name="init-windows">
+        <echo message="creating build directory: ${build.dir}" />
+        <mkdir dir="${build.dir}"/>
+        <exec executable="cmake" spawn="false">
+            <arg value="."/>
+            <arg value="-B${build.dir}"/>
+            <arg value="-G"/>
+            <arg value="Visual Studio 14 2015 Win64"/>
+            <!--
+            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
+            -->
+            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+        </exec>
+    </target>
+
+    <target name="init-unix">
+        <echo message="creating build directory: ${build.dir}" />
+        <mkdir dir="${build.dir}"/>
+        <exec executable="cmake" spawn="false">
+            <arg value="."/>
+            <arg value="-B${build.dir}"/>
+            <!--
+            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
+            -->
+            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+        </exec>
+    </target>
+
+    <!-- 
+    This target will run the compiled binary using the shape model and sample image bundled
+    in this project.
+    -->
+    <target name="run" depends="doWindows, doUnix, doMac">
+        <mkdir dir="${build.dir}"/>
+        <chmod file="${app.dir}/align_faces" perm="755"/>
+        <exec executable="${app.dir}/align_faces" spawn="false">
+            <arg value="models/shape_predictor_68_face_landmarks.dat"/>
+            <arg value="src/test/resources/g7_summit.jpg"/>
+            <arg value="160"/>
+            <arg value="target/g7_summit.jpg.align"/>
+            <arg value="false"/>
+            <arg value="0.40"/>
+            <arg value="75"/>
+        </exec>
+    </target>
+
+    <!-- 
+    This target will perform the following operations:
+    1. Clone dlib from github.
+    2. Change the branch to the label defined in tag.version.
+    3. Update the dlib and submodules if there is any.
+    -->
+    <target name="dlib">
+        <echo message="git clone --recurse-submodules git://github.com/davisking/dlib.git"/>
+
+        <exec executable="git" spawn="false">
+            <arg value="clone"/>
+            <arg value="--recurse-submodules"/>
+            <arg value="git://github.com/davisking/dlib.git"/>
+        </exec>
+
+        <exec executable="git" spawn="false" dir="dlib">
+            <arg value="checkout"/>
+            <arg value="-b"/>
+            <arg value="${tag.version}"/>
+            <arg value="${tag.version}"/>
+        </exec>
+
+        <exec executable="git" spawn="false" dir="dlib">
+            <arg value="submodule"/>
+            <arg value="update"/>
+        </exec>
+    </target>    
+
+</project>
