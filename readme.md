@@ -127,9 +127,10 @@ A simple python script align_faces.py to integrate with align_faces is also prov
 python align_faces.py
 ```
 
-![bound boxes](https://github.com/scotthong/dlib-align-faces/src/main/resources/bounding_boxes.png)
+![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/bounding_boxes.png)
 
-![bound boxes](https://github.com/scotthong/dlib-align-faces/src/main/resources/face_chips.png)
+
+![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/face_chips.png)
 
 ## Credits
 
