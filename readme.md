@@ -119,13 +119,14 @@ target/g7_summit.jpg.align.face_7.jpg
 target/g7_summit.jpg.align.face_8.jpg
 ```
 
-## Train Shape Predictor
-* ./train_shape_predictor /datasets/ibug_300W_large_face_landmark_dataset
+### python integration demo
+A simple python script align_faces.py to integrate with align_faces is also provided. Please use the following command run the python script. A plot with the image and bounding boxes of the detected faces will be displayed. A separate plot with aligned face chips will also display as well.
 ```
-mean training error: 0.071246
-mean testing error:  0.0709392
+python align_faces.py
 ```
 
 ## Credits
 
 The shape model file distributed with this repository is downloaded from the [dlib-models github repository](https://github.com/davisking/dlib-models).
+
+A separate shape model trained using the dataset as detailed [here](https://github.com/davisking/dlib/issues/359) is also provided under the ../models directory. The file size is much smaller. The performance difference as compared to the one provided by Dlib is yet to be validated! Please let me know if you run any comparison using these two shape models.
