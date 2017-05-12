@@ -8,13 +8,15 @@ This tool provide the following functions:
 
 You can capture the JSON output and read these face chips (JPEG images) to integrate with your application.
 
-## Support platforms
+## Supported platforms
 
-This tool supports multiple platforms the same as Dlib C++ library is supported. Limited testings have performed under the following platforms:
+Three pre-compiled binaries are distributed in the repository under ../src/main/bin/[platform].
 
 1. Linux/Ubuntu 14.04: Linux_x86_64
 2. Mac/OSX: mac_x86_64
 3. Windows/Windows 7: windows_x86_64
+
+You can always compile from the source to support your platform provided the required Dlib dependencies are available.
 
 ## How to compile
 
@@ -124,6 +126,10 @@ A simple python script align_faces.py to integrate with align_faces is also prov
 ```
 python align_faces.py
 ```
+
+![bound boxes](https://github.com/scotthong/dlib-align-faces/src/main/resources/bounding_boxes.png)
+
+![bound boxes](https://github.com/scotthong/dlib-align-faces/src/main/resources/face_chips.png)
 
 ## Credits
 
