@@ -119,6 +119,13 @@ target/g7_summit.jpg.align.face_7.jpg
 target/g7_summit.jpg.align.face_8.jpg
 ```
 
+## Train Shape Predictor
+* ./train_shape_predictor /datasets/ibug_300W_large_face_landmark_dataset
+```
+mean training error: 0.071246
+mean testing error:  0.0709392
+```
+
 ## Credits
 
 The shape model file distributed with this repository is downloaded from the [dlib-models github repository](https://github.com/davisking/dlib-models).

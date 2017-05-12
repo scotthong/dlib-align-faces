@@ -14,3 +14,9 @@ include(dlib/dlib/cmake)
 
 ADD_EXECUTABLE(align_faces align_faces.cpp)
 TARGET_LINK_LIBRARIES(align_faces dlib)
+
+ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
+TARGET_LINK_LIBRARIES(train_object_detector dlib)
+
+ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
+TARGET_LINK_LIBRARIES(train_shape_predictor dlib)
