@@ -85,10 +85,12 @@ Please execute the following ant target to run the example:
 ant run
 ```
 
-Or you can execute the command directly on the console.
+If you build **align_faces** from source, you can execute the command below:
 ```
-align_faces models/shape_predictor_68_face_landmarks.dat src/test/resources/g7_summit.jpg 160 target/g7_summit.jpg.align false 0.4 75
+target/align_faces models/shape_predictor_68_face_landmarks.dat src/test/resources/g7_summit.jpg 160 target/g7_summit.jpg.align false 0.4 75
 ```
+If you use the pre-build binary, please locate the binary under **../src/main/bin/[platform]** and use appropriate path to execute the command.
+
 
 Here is an example of the bounding boxes/rectangles exported as JSON to the console:
 ```
