@@ -10,18 +10,17 @@ You can capture the JSON output and read these face chips (JPEG images) to integ
 
 ![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/bounding_boxes.png)
 
-
 ![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/face_chips.png)
 
 ## Supported platforms
 
-Three pre-compiled binaries are distributed in the repository under ../src/main/bin/[platform].
+Three pre-compiled binaries are distributed in the repository under **../src/main/bin/[platform]**.
 
 1. Linux/Ubuntu 14.04: Linux_x86_64
 2. Mac/OSX: mac_x86_64
 3. Windows/Windows 7: windows_x86_64
 
-You can always compile from the source to support your platform provided the required Dlib dependencies are available.
+You can always compile from the source to support your platform provided the required Dlib dependencies are met.
 
 ## How to compile
 
@@ -33,18 +32,18 @@ git clone https://github.com/scotthong/dlib-align-faces.git
 
 ### [Dlib C++ Library](http://dlib.net) dependencies
 
-The align_faces tool is developed based on the [Dlib C++ Library](http://dlib.net). Please refer to the [Dlib website](http://dlib.net) for detailed instructions on how to build [Dlib](http://dlib.net) on your target platform. Please make sure that the required dependencies are installed.
+The **align_faces** tool is developed based on the [Dlib C++ Library](http://dlib.net). Please refer to the [Dlib website](http://dlib.net) for detailed instructions on how to build [Dlib](http://dlib.net) on your platform. Please make sure that the required dependencies are installed.
 
 ### Additional dependencies
 
-This project utilize a custom [ANT](http://ant.apache.org/) script to build the align_faces tool. Pease make sure you have the following dependencies installed and configured properly for your environment.
+This project utilize a custom [ANT](http://ant.apache.org/) script to build the **align_faces** tool. Pease make sure you have the following dependencies installed and configured properly for your environment.
 
 1. [Java](https://www.java.com)
 2. [ANT](http://ant.apache.org/)
 
 ### Compile align_faces
 
-Please execute the following ant target to compile the align_faces tool.
+Please execute the following ant target to compile the **align_faces** tool.
 
 ```
 ant build-all
@@ -55,12 +54,12 @@ The "build-all" ant target execute the following tasks:
 1. Clone Dlib from github
 2. Checkout Dlib branch v19.4
 3. Update submodule if there is any
-4. Build align_faces using cmake.
-5. Copy align_faces to the corresponding target directory for distribution as pre-build binary.
+4. Build **align_faces** using cmake.
+5. Copy **align_faces** to the corresponding target directory for distribution as pre-build binary.
 
 ### align_faces command options
 
-align_faces model imageFile imageSize facePathPrefix pyramidUp padding imageQuality
+**align_faces** model imageFile imageSize facePathPrefix pyramidUp padding imageQuality
 
 * model: The path to the shape model.
     * models/shape_predictor_68_face_landmarks.dat
@@ -79,7 +78,7 @@ align_faces model imageFile imageSize facePathPrefix pyramidUp padding imageQual
 
 ### Run the pre-build align_faces
 
-This dlib-align-faces repository includes three pre-build align_faces binaries under "src/main/bin". These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage of these instructions for better performance.
+This dlib-align-faces repository includes three pre-build **align_faces** binaries under "src/main/bin". These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage of these instructions for better performance.
 
 Please execute the following ant target to run the example:
 ```
@@ -127,7 +126,7 @@ target/g7_summit.jpg.align.face_8.jpg
 ```
 
 ### python integration demo
-A simple python script align_faces.py to integrate with align_faces is also provided. Please use the following command run the python script. A plot with the image and bounding boxes of the detected faces will be displayed. A separate plot with aligned face chips will also display as well.
+A simple python script **align_faces.py** to integrate with the **align_faces** is included. Please use the following command run the python script. A figure of the image with the bounding boxes of the detected faces will be displayed. A separate figure with the extracted face chips will be displayed as well.
 ```
 python align_faces.py
 ```
@@ -136,4 +135,4 @@ python align_faces.py
 
 The shape model file distributed with this repository is downloaded from the [dlib-models github repository](https://github.com/davisking/dlib-models).
 
-A separate shape model trained using the dataset as detailed [here](https://github.com/davisking/dlib/issues/359) is also provided under the ../models directory. The file size is much smaller. The performance difference as compared to the one provided by Dlib is yet to be validated! Please let me know if you run any comparison using these two shape models.
+A separate shape model trained using the dataset as detailed [here](https://github.com/davisking/dlib/issues/359) is also provided under the **../models** directory. The file size is much smaller. The performance difference as compared to the one provided by Dlib is yet to be validated! Please let me know if you run any comparison using these two shape models.
