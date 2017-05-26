@@ -3,10 +3,9 @@
 This tool provide the following functions:
 
 1. Detect frontal faces in an image.
-2. Output face chip rectangles/bounding boxes in JSON format to the console.
-3. Align the face chips and save them to the specified destination with the given size, padding and quality.
+2. Output the face chips' rectangles/bounding boxes and base64 encoded images in JSON format to the console.
 
-You can capture the JSON output and read these face chips (JPEG images) to integrate with your application.
+You can capture the JSON output and parse the JSON object to integrate with your application.
 
 ![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/bounding_boxes.png)
 
@@ -59,7 +58,7 @@ The "build-all" ant target execute the following tasks:
 
 ### align_faces command options
 
-**align_faces** model imageFile imageSize facePathPrefix pyramidUp padding imageQuality
+**align_faces** model imageFile imageSize pyramidUp padding imageQuality
 
 * model: The path to the shape model.
     * models/shape_predictor_68_face_landmarks.dat
@@ -67,8 +66,6 @@ The "build-all" ant target execute the following tasks:
     * src/test/resources/g7_summit.jpg
 * imageSize: The size of the image (Width and Height).
     * 160
-* facePathPrefix: The file path prefix of the face chip.
-    * target/g7_summit.jpg.align
 * pyramidUp: Specify whether the image should be scaled up (2x).
     * false
 * padding: The margin or padding to be added to the face chips.
@@ -99,32 +96,19 @@ Here is an example of the bounding boxes/rectangles exported as JSON to the cons
 "facePathPrefix":"target/g7_summit.jpg.align",
 "dim": {"width":3000,"height":1994},
 "faces": [
-  {"id":0,"rect": {"x":592,"y":707,"width":87,"height":87}},
-  {"id":1,"rect": {"x":2224,"y":659,"width":87,"height":87}},
-  {"id":2,"rect": {"x":1446,"y":736,"width":88,"height":87}},
-  {"id":3,"rect": {"x":1925,"y":677,"width":73,"height":73}},
-  {"id":4,"rect": {"x":1715,"y":755,"width":88,"height":87}},
-  {"id":5,"rect": {"x":2485,"y":688,"width":104,"height":104}},
-  {"id":6,"rect": {"x":1139,"y":688,"width":88,"height":87}},
-  {"id":7,"rect": {"x":323,"y":765,"width":88,"height":87}},
-  {"id":8,"rect": {"x":861,"y":774,"width":87,"height":88}}
+  {"id":0,"rect": {"x":592,"y":707,"width":87,"height":87},"base64Image": "..."},
+  {"id":1,"rect": {"x":2224,"y":659,"width":87,"height":87},"base64Image": "..."},
+  {"id":2,"rect": {"x":1446,"y":736,"width":88,"height":87},"base64Image": "..."},
+  {"id":3,"rect": {"x":1925,"y":677,"width":73,"height":73},"base64Image": "..."},
+  {"id":4,"rect": {"x":1715,"y":755,"width":88,"height":87},"base64Image": "..."},
+  {"id":5,"rect": {"x":2485,"y":688,"width":104,"height":104},"base64Image": "..."},
+  {"id":6,"rect": {"x":1139,"y":688,"width":88,"height":87},"base64Image": "..."},
+  {"id":7,"rect": {"x":323,"y":765,"width":88,"height":87},"base64Image": "..."},
+  {"id":8,"rect": {"x":861,"y":774,"width":87,"height":88},"base64Image": "..."}
 ],
 "time":3478308,
 "code":0
 }
-```
-
-The face chips are saved as JPEG images under the "target" directory with the file name prefixed as "g7_summit.jpg.align".
-```
-target/g7_summit.jpg.align.face_0.jpg
-target/g7_summit.jpg.align.face_1.jpg
-target/g7_summit.jpg.align.face_2.jpg
-target/g7_summit.jpg.align.face_3.jpg
-target/g7_summit.jpg.align.face_4.jpg
-target/g7_summit.jpg.align.face_5.jpg
-target/g7_summit.jpg.align.face_6.jpg
-target/g7_summit.jpg.align.face_7.jpg
-target/g7_summit.jpg.align.face_8.jpg
 ```
 
 ### python integration demo

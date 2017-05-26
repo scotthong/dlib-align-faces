@@ -134,7 +134,7 @@
     This target will run the compiled binary using the shape model and sample image bundled
     in this project.
     -->
-    <target name="run" depends="doWindows, doUnix, doMac, build">
+    <target name="run" depends="doWindows, doUnix, doMac">
         <mkdir dir="${build.dir}"/>
         <chmod file="${build.dir}/align_faces" perm="755"/>
         <echo message="creating build directory: ${build.dir}" />
@@ -142,7 +142,6 @@
             <arg value="models/shape_predictor_68_face_landmarks.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
-            <arg value="target/g7_summit.jpg.align"/>
             <arg value="false"/>
             <arg value="0.40"/>
             <arg value="75"/>
@@ -152,7 +151,6 @@
             <arg value="models/sp.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
-            <arg value="target/g7_summit.jpg.sp"/>
             <arg value="false"/>
             <arg value="0.40"/>
             <arg value="75"/>

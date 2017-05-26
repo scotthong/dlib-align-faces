@@ -43,9 +43,6 @@ SOFTWARE.
 #include <iostream>
 #include <time.h>
 #include <setjmp.h>
-// #include "dlib/external/libjpeg/jpeglib.h"
-// #include <dlib/external/libjpeg/jerror.h>
-
 #include <jpeglib.h>
 #include <jerror.h>
 
@@ -107,11 +104,9 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned long in
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// Dlib is using JPEGLIB 6B, which does not support saving jpeg to memory. 
-// In order not to break any function in Dlib, ported 80 version here 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+// https://stackoverflow.com/questions/1443390/compressing-iplimage-to-jpeg-using-libjpeg-in-opencv
 
-/* choose an efficiently fwrite’able size */
+/* choose an efficiently fwrite’able size (16k) */
 #define OUTPUT_BUF_SIZE 16384
 
 struct jpeg_saver_error_mgr 
@@ -214,27 +209,14 @@ void jpeg_mem_dest(j_compress_ptr cinfo, unsigned char ** outbuffer, unsigned lo
     dest->pub.free_in_buffer = dest->bufsize = *outsize;
 }
 
-
-void save_jpeg_mem (
-    const array2d<rgb_pixel>& img,
-    int quality
-)
-{
+void save_jpeg_as_base64(const array2d<rgb_pixel>& img, int quality, std::ostringstream &oss) {
     unsigned char *mem = NULL;
     unsigned long mem_size = 0;
-
     struct jpeg_compress_struct cinfo;
-    // struct jpeg_saver_error_mgr jerr;
     struct jpeg_error_mgr jerr;
-    // need to try which is the right one
     cinfo.err = jpeg_std_error(&jerr);
-
-    cout << "before: jpeg_create_compress" << endl;
     jpeg_create_compress(&cinfo);
-    cout << "after: jpeg_create_compress" << endl;
-    // jpeg_stdio_dest(&cinfo, outfile);
     jpeg_mem_dest(&cinfo, &mem, &mem_size);
-    cout << "jpeg_mem_dest" << endl;
      
     cinfo.image_width      = img.nc();
     cinfo.image_height     = img.nr();
@@ -249,31 +231,26 @@ void save_jpeg_mem (
         JSAMPROW row_pointer = (JSAMPROW) &img[cinfo.next_scanline][0];
         jpeg_write_scanlines(&cinfo, &row_pointer, 1);
     }
-    cout << "jpeg_write_scanlines" << endl;
-
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
 
     std:string base64EncodedJpeg = base64_encode(mem, mem_size);
-    cout << base64EncodedJpeg << endl;
+    oss << base64EncodedJpeg;
+    // freeup the memory
     free(mem);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-int main(int argc, char** argv)
-{
-    try
-    {
+int main(int argc, char** argv) {
+    try {
         clock_t t1, t2;
         t1 = clock();        
         std::ostringstream json;
 
-        if (argc < 8)
-        {
+        if (argc < 7) {
             json << "{\n\"code\":1," << endl 
                  << "\"message\":\"";
-            json << "Usage: align_faces model imageFile imageSize facePathPrefix pyramidUp padding imageQuality"
+            json << "Usage: align_faces model imageFile imageSize pyramidUp padding imageQuality"
                  << "\"" << endl << "}" << endl;
             cout << json.str();
             return 0;
@@ -293,11 +270,8 @@ int main(int argc, char** argv)
         int imageSize = std::stoi(argv[3]);
         // cout << "imageSize : " << imageSize << endl;
 
-        std::string facePathPrefix = argv[4];
-        // cout << "facePathPrefix : " << facePathPrefix << endl;
-
         float scale = 1.0f;
-        bool pyramidUp = string2bool(argv[5]);
+        bool pyramidUp = string2bool(argv[4]);
         if(pyramidUp) {
             dlib::pyramid_up(img);
             scale = 2.0f;
@@ -305,10 +279,10 @@ int main(int argc, char** argv)
         // cout << "pyramidUp : " << pyramidUp << endl;
 
         float padding = 0.05f;
-        padding = std::atof(argv[6]);
+        padding = std::atof(argv[5]);
         // cout << "padding : " << padding << endl;
 
-        int imageQuality = std::stoi(argv[7]);
+        int imageQuality = std::stoi(argv[6]);
         // cout << "imageQuality : " << imageQuality << endl;
 
         // Now tell the face detector to give us a list of bounding boxes
@@ -316,36 +290,17 @@ int main(int argc, char** argv)
         std::vector<rectangle> dets = detector(img);
 
         json << "{\"scale\":" << scale << "," << endl
-             << "\"facePathPrefix\":\"" << facePathPrefix << "\"," << endl
              << "\"dim\": {\"width\":" 
              << img.nc() << ",\"height\":" << img.nr() 
              << "}";
 
         if(dets.size() > 0) {
             std::vector<full_object_detection> shapes;
-
-            json << "," << endl <<"\"faces\": [" << endl;
+            //
             for(unsigned int j = 0; j < dets.size(); ++j) {
                 full_object_detection shape = sp(img, dets[j]);
-                rectangle rect = shape.get_rect();
-
-                json << "  {\"id\":" << j
-                     << ",\"rect\": {\"x\":" 
-                     << rect.left() << ",\"y\":" << rect.top()
-                     << ",\"width\":" << rect.width() << ",\"height\":" 
-                     << rect.height() << "}}";
-
-                if(j < (dets.size() - 1)) {
-                    json << "," << endl;
-                }
                 shapes.push_back(shape);
             }
-            // json << endl << "]," << endl << "\"code\":0}";
-            t2 = clock();
-            long diff = (t2 - t1);
-            json << endl << "]," 
-                 << endl << "\"time\":" << diff << ","
-                 << endl << "\"code\":0}" << endl;            
 
             dlib::array<array2d<rgb_pixel>> face_chips;
             extract_image_chips(
@@ -354,14 +309,36 @@ int main(int argc, char** argv)
                 face_chips
             );
 
-            for (unsigned long j = 0; j < face_chips.size(); ++j) {
-                std::ostringstream stringStream;
-                stringStream << facePathPrefix << ".face_" << j << ".jpg";
-                std::string filename = stringStream.str();
-                save_jpeg(face_chips[j], filename, imageQuality);
+            json << "," << endl <<"\"faces\": [" << endl;
+            for(unsigned int j = 0; j < dets.size(); ++j) {
+                full_object_detection shape = sp(img, dets[j]);
+                rectangle rect = shape.get_rect();
+                // id
+                json << "  {\"id\":" << j << ",";
+                // rect
+                json << " \"rect\": {\"x\":" 
+                     << rect.left() << ",\"y\":" << rect.top()
+                     << ",\"width\":" << rect.width() << ",\"height\":" 
+                     << rect.height() << "}," << endl;
 
-                save_jpeg_mem(face_chips[j], imageQuality);
+                // base64Image
+                json << "    \"base64Image\": \"";
+                save_jpeg_as_base64(face_chips[j], imageQuality, json);
+                json << "\"}";
+
+                if(j < (dets.size() - 1)) {
+                    json << "," << endl;
+                }
             }
+
+            t2 = clock();
+            long diff = (t2 - t1);
+
+            // json << endl << "]," << endl << "\"code\":0}";
+            json << endl << "]," 
+                 << endl << "\"time\":" << diff << ","
+                 << endl << "\"code\":0}" << endl;
+
         }
         else {
             json << ",\"code\":0}" << endl;

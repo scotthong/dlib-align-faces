@@ -29,19 +29,20 @@ import matplotlib.patches as patches
 from PIL import Image
 import numpy as np
 from scipy import misc
+import base64
+from cStringIO import StringIO
 
-# align_faces model image_file image_size face_path_prefix pyramid_up padding image_quality
+# align_faces model image_file image_size pyramid_up padding image_quality
 
 align_faces = 'target/align_faces'
 model = 'models/shape_predictor_68_face_landmarks.dat'
 image_file = 'src/test/resources/g7_summit.jpg'
 image_size = 160
-face_path_prefix = 'target/g7_summit.jpg'
 pyramid_up = 'false'
 padding = '0.4'
 image_quality = '75'
 
-command = align_faces + ' ' + model + ' ' + image_file + ' ' + str(image_size) + ' ' + face_path_prefix + ' ' + pyramid_up + ' ' + padding + ' ' + image_quality
+command = align_faces + ' ' + model + ' ' + image_file + ' ' + str(image_size) + ' ' + pyramid_up + ' ' + padding + ' ' + image_quality
 
 results = commands.getstatusoutput(command)
 
@@ -52,9 +53,10 @@ facesJson = results[1]
 faceChips = json.loads(facesJson)
 
 faces = faceChips['faces']
-face_path_prefix = faceChips['facePathPrefix']
 scale = faceChips['scale']
 dim = faceChips['dim']
+image_blobs = []
+
 
 im = np.array(Image.open(image_file), dtype=np.uint8)
 # Create figure and axes
@@ -63,13 +65,11 @@ fig.set_size_inches(10.5, 6)
 # Display the image
 ax.imshow(im)
 
-image_paths = []
 # iterate through the face chips
 for face in faces:
     rect = face['rect'] 
     # print face['id'], rect['x'], rect['y'], rect['width'], rect['height']
-    image_path = face_path_prefix + '.face_' + str(face['id']) + '.jpg'
-    image_paths.append(image_path)
+    image_blobs.append(base64.b64decode(face['base64Image']))
     # Create a Rectangle patch
     rect = patches.Rectangle(
         (rect['x'], rect['y']),
@@ -78,16 +78,17 @@ for face in faces:
     # Add the patch to the Axes
     ax.add_patch(rect)
 
-print '# faces detected :', len(image_paths)
+print '# faces detected :', len(image_blobs)
 plt.draw()
 
 # Create figure with 3x3 sub-plots.
 img_shape = (image_size, image_size)
-fig, axes = plt.subplots(1, len(image_paths))
+fig, axes = plt.subplots(1, len(image_blobs))
 fig.set_size_inches(10.5, 1.25)
 fig.subplots_adjust(left=0.01, bottom=0.01, right=0.99, top=0.99, hspace=0.1, wspace=0.1)
+#
 for i, ax in enumerate(axes.flat):
-    im = np.array(Image.open(image_paths[i]), dtype=np.uint8)
+    im = np.array(Image.open(StringIO(image_blobs[i])))
     ax.imshow(im)
     # Remove ticks from the plot.
     ax.set_xticks([])
