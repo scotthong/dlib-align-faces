@@ -41,7 +41,13 @@ SOFTWARE.
 #include <dlib/image_processing.h>
 #include <dlib/image_io.h>
 #include <iostream>
-#include <time.h>   
+#include <time.h>
+#include <setjmp.h>
+// #include "dlib/external/libjpeg/jpeglib.h"
+// #include <dlib/external/libjpeg/jerror.h>
+
+#include <jpeglib.h>
+#include <jerror.h>
 
 using namespace dlib;
 using namespace std;
@@ -53,6 +59,207 @@ bool string2bool (const std::string & v)
            (strcasecmp (v.c_str (), "true") == 0 ||
            atoi (v.c_str ()) != 0);
 }
+
+// http://renenyffenegger.ch/notes/development/Base64/Encoding-and-decoding-base-64-with-cpp
+static const std::string base64_chars = 
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+             "abcdefghijklmnopqrstuvwxyz"
+             "0123456789+/";
+
+std::string base64_encode(unsigned char const* bytes_to_encode, unsigned long in_len) {
+    std::string ret;
+    int i = 0;
+    int j = 0;
+    unsigned char char_array_3[3];
+    unsigned char char_array_4[4];
+    while (in_len--) {
+        char_array_3[i++] = *(bytes_to_encode++);
+        if (i == 3) {
+            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+            char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+            char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+            char_array_4[3] = char_array_3[2] & 0x3f;
+            for(i = 0; (i <4) ; i++) {
+                ret += base64_chars[char_array_4[i]];
+            }
+            i = 0;
+        }
+    }
+
+    if (i) {
+        for(j = i; j < 3; j++) {
+            char_array_3[j] = '\0';
+        }
+        char_array_4[0] = ( char_array_3[0] & 0xfc) >> 2;
+        char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+        char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+        char_array_4[3] =   char_array_3[2] & 0x3f;
+
+        for (j = 0; (j < i + 1); j++) {
+            ret += base64_chars[char_array_4[j]];
+        }
+
+        while((i++ < 3)) {
+            ret += '=';
+        }
+    }
+    return ret;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Dlib is using JPEGLIB 6B, which does not support saving jpeg to memory. 
+// In order not to break any function in Dlib, ported 80 version here 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* choose an efficiently fwrite’able size */
+#define OUTPUT_BUF_SIZE 16384
+
+struct jpeg_saver_error_mgr 
+{
+    jpeg_error_mgr pub;    /* "public" fields */
+    jmp_buf setjmp_buffer;  /* for return to caller */
+};
+
+void jpeg_saver_error_exit (j_common_ptr cinfo)
+{
+    /* cinfo->err really points to a jpeg_saver_error_mgr struct, so coerce pointer */
+    jpeg_saver_error_mgr* myerr = (jpeg_saver_error_mgr*) cinfo->err;
+
+    /* Return control to the setjmp point */
+    longjmp(myerr->setjmp_buffer, 1);
+}
+
+/* Expanded data destination object for memory output */
+typedef struct {
+    struct jpeg_destination_mgr pub;    /* public fields */
+    unsigned char ** outbuffer;         /* target buffer */
+    unsigned long * outsize;
+    unsigned char * newbuffer;          /* newly allocated buffer */
+    JOCTET * buffer;                    /* start of buffer */
+    size_t bufsize;
+} my_mem_destination_mgr;
+
+typedef my_mem_destination_mgr * my_mem_dest_ptr;
+
+void init_mem_destination(j_compress_ptr cinfo) {
+    /* no work necessary here */
+}
+
+int empty_mem_output_buffer(j_compress_ptr cinfo) {
+    size_t nextsize;
+    JOCTET * nextbuffer;
+    my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;
+
+    /* Try to allocate new buffer with double size */
+    nextsize = dest->bufsize * 2;
+    nextbuffer = (JOCTET *)malloc(nextsize);
+    if (nextbuffer == NULL) {
+        ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, 10);
+    }
+
+    memcpy(nextbuffer, dest->buffer, dest->bufsize);
+
+    if (dest->newbuffer != NULL) {
+        free(dest->newbuffer);
+    }
+
+    dest->newbuffer = nextbuffer;
+    dest->pub.next_output_byte = nextbuffer + dest->bufsize;
+    dest->pub.free_in_buffer = dest->bufsize;
+    dest->buffer = nextbuffer;
+    dest->bufsize = nextsize;
+    return true;
+}
+
+void term_mem_destination(j_compress_ptr cinfo) {
+    my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;
+    *dest->outbuffer = dest->buffer;
+    *dest->outsize = dest->bufsize - dest->pub.free_in_buffer;
+}
+
+void jpeg_mem_dest(j_compress_ptr cinfo, unsigned char ** outbuffer, unsigned long * outsize) {
+    my_mem_dest_ptr dest;
+
+    /* sanity check */
+    if (outbuffer == NULL || outsize == NULL) {
+        ERREXIT(cinfo, JERR_BUFFER_SIZE);
+    }
+
+    /* The destination object is made permanent so that multiple JPEG images
+    * can be written to the same buffer without re-executing jpeg_mem_dest.
+    */
+    /* first time for this JPEG object? */        
+    if (cinfo->dest == NULL) {
+        cinfo->dest = (struct jpeg_destination_mgr *)
+        (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT, sizeof(my_mem_destination_mgr));
+    }
+
+    dest = (my_mem_dest_ptr) cinfo->dest;
+    dest->pub.init_destination = init_mem_destination;
+    dest->pub.empty_output_buffer = empty_mem_output_buffer;
+    dest->pub.term_destination = term_mem_destination;
+    dest->outbuffer = outbuffer;
+    dest->outsize = outsize;
+    dest->newbuffer = NULL;
+
+    if (*outbuffer == NULL || *outsize == 0) {
+        /* Allocate initial buffer */
+        dest->newbuffer = *outbuffer = (unsigned char*)malloc(OUTPUT_BUF_SIZE);
+        if (dest->newbuffer == NULL) {
+            ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, 10);
+        }
+        *outsize = OUTPUT_BUF_SIZE;
+    }
+    dest->pub.next_output_byte = dest->buffer = *outbuffer;
+    dest->pub.free_in_buffer = dest->bufsize = *outsize;
+}
+
+
+void save_jpeg_mem (
+    const array2d<rgb_pixel>& img,
+    int quality
+)
+{
+    unsigned char *mem = NULL;
+    unsigned long mem_size = 0;
+
+    struct jpeg_compress_struct cinfo;
+    // struct jpeg_saver_error_mgr jerr;
+    struct jpeg_error_mgr jerr;
+    // need to try which is the right one
+    cinfo.err = jpeg_std_error(&jerr);
+
+    cout << "before: jpeg_create_compress" << endl;
+    jpeg_create_compress(&cinfo);
+    cout << "after: jpeg_create_compress" << endl;
+    // jpeg_stdio_dest(&cinfo, outfile);
+    jpeg_mem_dest(&cinfo, &mem, &mem_size);
+    cout << "jpeg_mem_dest" << endl;
+     
+    cinfo.image_width      = img.nc();
+    cinfo.image_height     = img.nr();
+    cinfo.input_components = 3;
+    cinfo.in_color_space   = JCS_RGB;
+    jpeg_set_defaults(&cinfo);
+    jpeg_set_quality (&cinfo, quality, TRUE);
+    jpeg_start_compress(&cinfo, TRUE);
+     
+    // now write out the rows one at a time
+    while (cinfo.next_scanline < cinfo.image_height) {
+        JSAMPROW row_pointer = (JSAMPROW) &img[cinfo.next_scanline][0];
+        jpeg_write_scanlines(&cinfo, &row_pointer, 1);
+    }
+    cout << "jpeg_write_scanlines" << endl;
+
+    jpeg_finish_compress(&cinfo);
+    jpeg_destroy_compress(&cinfo);
+
+    std:string base64EncodedJpeg = base64_encode(mem, mem_size);
+    cout << base64EncodedJpeg << endl;
+    free(mem);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 int main(int argc, char** argv)
 {
@@ -152,6 +359,8 @@ int main(int argc, char** argv)
                 stringStream << facePathPrefix << ".face_" << j << ".jpg";
                 std::string filename = stringStream.str();
                 save_jpeg(face_chips[j], filename, imageQuality);
+
+                save_jpeg_mem(face_chips[j], imageQuality);
             }
         }
         else {
