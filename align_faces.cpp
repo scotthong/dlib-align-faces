@@ -140,7 +140,7 @@ void init_mem_destination(j_compress_ptr cinfo) {
     /* no work necessary here */
 }
 
-int empty_mem_output_buffer(j_compress_ptr cinfo) {
+boolean empty_mem_output_buffer(j_compress_ptr cinfo) {
     size_t nextsize;
     JOCTET * nextbuffer;
     my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;

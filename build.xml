@@ -135,10 +135,9 @@
     in this project.
     -->
     <target name="run" depends="doWindows, doUnix, doMac">
-        <mkdir dir="${build.dir}"/>
-        <chmod file="${build.dir}/align_faces" perm="755"/>
-        <echo message="creating build directory: ${build.dir}" />
-        <exec executable="${build.dir}/align_faces" spawn="false">
+        <chmod file="${exe.dir}/align_faces" perm="755"/>
+        <echo message="Executable directory: ${exe.dir}" />
+        <exec executable="${exe.dir}/align_faces" spawn="false">
             <arg value="models/shape_predictor_68_face_landmarks.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
@@ -147,7 +146,7 @@
             <arg value="75"/>
         </exec>
 
-<!--         <exec executable="${app.dir}/align_faces" spawn="false">
+<!--        <exec executable="${app.dir}/align_faces" spawn="false">
             <arg value="models/sp.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
