@@ -1,1 +1,1 @@
-http://windows.php.net/downloads/php-sdk/deps
+http://windows.php.net/downloads/php-sdk/deps/vc15/x64/libjpeg-9b-vc14-x64.zip

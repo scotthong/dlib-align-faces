@@ -10,21 +10,26 @@ PROJECT(dlib-align-faces)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
+# For windows_x86_64 platform, use the pre-compiled libjpeg distributed with this project.
+# For non windows platform, use libjpeg installed for the your platform. Please make sure that
+# the minimum libjpeg version has to be greater than 80.
+
+
 if (WIN32 AND NOT CYGWIN) 
+    #
+    # The pre-compiled libjpeg is downloaded using the following link.
+    # http://windows.php.net/downloads/php-sdk/deps/vc15/x64/libjpeg-9b-vc14-x64.zip
+    #
 	SET(LIBJPEG_LIB ${CMAKE_SOURCE_DIR}/libjpeg/windows_x86_64/lib/libjpeg_a.lib)
 	SET(LIBJPEG_INC ${CMAKE_SOURCE_DIR}/libjpeg/windows_x86_64/include)
-elseif (APPLE)
-	SET(LIBJPEG_LIB ${CMAKE_SOURCE_DIR}/libjpeg/mac_x86_64/lib/libjpeg.dynlib)
-	SET(LIBJPEG_INC ${CMAKE_SOURCE_DIR}/libjpeg/mac_x86_64/include)
 else()
-	SET(LIBJPEG_LIB ${CMAKE_SOURCE_DIR}/libjpeg/unix_x86_64/lib/libjpeg.a)
-	SET(LIBJPEG_INC ${CMAKE_SOURCE_DIR}/libjpeg/unix_x86_64/include)
+    SET(LIBJPEG_LIB "")
+    SET(LIBJPEG_INC "")
 endif()
 
 include(dlib/dlib/cmake)
 
 include_directories(${LIBJPEG_INC})
-
 ADD_EXECUTABLE(align_faces align_faces.cpp)
 TARGET_LINK_LIBRARIES(align_faces dlib ${LIBJPEG_LIB})
 
