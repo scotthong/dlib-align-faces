@@ -26,8 +26,8 @@ if (WIN32 AND NOT CYGWIN)
     include_directories(${LIBJPEG_INC})
 
 elseif(APPLE)
-    # SET(LIBJPEG_LIB "/usr/local/lib/libjpeg.a")
-    # SET(LIBJPEG_INC "/usr/local/include")
+    # Under mac_x86_64, use brew to install libjpeg
+    # brew install libjpeg
     # include_directories(${LIBJPEG_INC})
 
     SET(LIBJPEG_LIB "jpeg")
@@ -40,8 +40,8 @@ endif()
 ADD_EXECUTABLE(align_faces align_faces.cpp)
 TARGET_LINK_LIBRARIES(align_faces ${LIBJPEG_LIB} dlib)    
 
-# ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
-# TARGET_LINK_LIBRARIES(train_object_detector dlib)
+ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
+TARGET_LINK_LIBRARIES(train_object_detector ${LIBJPEG_LIB} dlib)
 
-# ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
-# TARGET_LINK_LIBRARIES(train_shape_predictor dlib)
+ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
+TARGET_LINK_LIBRARIES(train_shape_predictor ${LIBJPEG_LIB} dlib)
