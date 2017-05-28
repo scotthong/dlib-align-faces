@@ -14,6 +14,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 # For non windows platform, use libjpeg installed for the your platform. Please make sure that
 # the minimum libjpeg version has to be greater than 80.
 
+include(dlib/dlib/cmake)
 
 if (WIN32 AND NOT CYGWIN) 
     #
@@ -23,19 +24,24 @@ if (WIN32 AND NOT CYGWIN)
     SET(LIBJPEG_LIB ${CMAKE_SOURCE_DIR}/libjpeg/windows_x86_64/lib/libjpeg_a.lib)
 	SET(LIBJPEG_INC ${CMAKE_SOURCE_DIR}/libjpeg/windows_x86_64/include)
     include_directories(${LIBJPEG_INC})
+
+elseif(APPLE)
+    # SET(LIBJPEG_LIB "/usr/local/lib/libjpeg.a")
+    # SET(LIBJPEG_INC "/usr/local/include")
+    # include_directories(${LIBJPEG_INC})
+
+    SET(LIBJPEG_LIB "jpeg")
+
 else()
     SET(LIBJPEG_LIB "")
-    SET(LIBJPEG_INC "")
+
 endif()
 
-include(dlib/dlib/cmake)
-
 ADD_EXECUTABLE(align_faces align_faces.cpp)
-TARGET_LINK_LIBRARIES(align_faces dlib ${LIBJPEG_LIB})
-# TARGET_LINK_LIBRARIES(align_faces dlib)
+TARGET_LINK_LIBRARIES(align_faces ${LIBJPEG_LIB} dlib)    
 
-ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
-TARGET_LINK_LIBRARIES(train_object_detector dlib)
+# ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
+# TARGET_LINK_LIBRARIES(train_object_detector dlib)
 
-ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
-TARGET_LINK_LIBRARIES(train_shape_predictor dlib)
+# ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
+# TARGET_LINK_LIBRARIES(train_shape_predictor dlib)
