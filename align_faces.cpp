@@ -310,8 +310,8 @@ int main(int argc, char** argv) {
             );
 
             json << "," << endl <<"\"faces\": [" << endl;
-            for(unsigned int j = 0; j < dets.size(); ++j) {
-                full_object_detection shape = sp(img, dets[j]);
+            for(unsigned int j = 0; j < shapes.size(); ++j) {
+                full_object_detection shape = shapes[j];
                 rectangle rect = shape.get_rect();
                 // id
                 json << "  {\"id\":" << j << ",";
