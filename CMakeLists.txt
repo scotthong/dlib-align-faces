@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.8.4)
 
 PROJECT(dlib-align-faces)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -static")
 
 # For windows_x86_64 platform, use the pre-compiled libjpeg distributed with this project.
 # For non windows platform, use libjpeg installed for the your platform. Please make sure that
