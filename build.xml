@@ -135,9 +135,17 @@
     in this project.
     -->
     <target name="run" depends="doWindows, doUnix, doMac">
-        <chmod file="${exe.dir}/align_faces" perm="755"/>
-        <echo message="Executable directory: ${exe.dir}" />
-        <exec executable="${exe.dir}/align_faces" spawn="false">
+
+        <available file="${exe.dir}/${app.name}" property="target.app.present"/>
+
+        <condition property="run.dir" 
+                   value="${exe.dir}" else="${app.dir}">
+            <isset property="target.app.present"/>
+        </condition>
+
+        <echo message="executing align_faces from directory: ${run.dir}" />
+
+        <exec executable="${run.dir}/align_faces" spawn="false">
             <arg value="models/shape_predictor_68_face_landmarks.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
