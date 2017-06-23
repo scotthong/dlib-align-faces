@@ -31,7 +31,7 @@ elseif(APPLE)
     SET(LIBJPEG_LIB "jpeg")
 
 else()
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -static")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     SET(LIBJPEG_LIB "")
 
 endif()
@@ -39,8 +39,8 @@ endif()
 ADD_EXECUTABLE(align_faces align_faces.cpp)
 TARGET_LINK_LIBRARIES(align_faces ${LIBJPEG_LIB} dlib)
 
-# ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
-# TARGET_LINK_LIBRARIES(train_object_detector ${LIBJPEG_LIB} dlib)
+ADD_EXECUTABLE(train_object_detector train_object_detector.cpp)
+TARGET_LINK_LIBRARIES(train_object_detector ${LIBJPEG_LIB} dlib)
 
-# ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
-# TARGET_LINK_LIBRARIES(train_shape_predictor ${LIBJPEG_LIB} dlib)
+ADD_EXECUTABLE(train_shape_predictor train_shape_predictor_ex.cpp)
+TARGET_LINK_LIBRARIES(train_shape_predictor ${LIBJPEG_LIB} dlib)

@@ -110,9 +110,8 @@
             <arg value="Visual Studio 14 2015 Win64"/>
             <!--
             <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
-            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
             -->
-            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
         </exec>
     </target>
 
@@ -126,7 +125,7 @@
             <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
             -->
-            <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
         </exec>
     </target>
 
