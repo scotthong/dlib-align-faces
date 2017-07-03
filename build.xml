@@ -48,13 +48,7 @@
         <echo message="os.version = ${os.version}" />
 
         <echo message="exe.dir = ${exe.dir}" />
-        <echo message="app.dir = ${app.dir}" />
         <echo message="app.name = ${app.name}" />
-
-        <mkdir dir="${app.dir}"/>
-        <echo message="copy from ${exe.dir}/${app.name} to ${app.dir}/${app.name}"/>
-        <copy file="${exe.dir}/${app.name}" tofile="${app.dir}/${app.name}"/>
-        <chmod file="${app.dir}/${app.name}" perm="755"/>
     </target>
 
     <target name="build">
@@ -87,9 +81,7 @@
         <property name="app.dir" value="${bin.dir}/mac_x86_64"/>
     </target>
 
-    <!-- 
-    Clean up the build directory
-    -->
+    <!-- Clean up the build directory -->
     <target name="clean">
         <echo message="removing directory : ${build.dir}" />
         <delete dir="${build.dir}"/>
@@ -149,18 +141,9 @@
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
             <arg value="false"/>
-            <arg value="0.40"/>
+            <arg value="0.36"/>
             <arg value="75"/>
         </exec>
-
-<!--        <exec executable="${app.dir}/align_faces" spawn="false">
-            <arg value="models/sp.dat"/>
-            <arg value="src/test/resources/g7_summit.jpg"/>
-            <arg value="160"/>
-            <arg value="false"/>
-            <arg value="0.40"/>
-            <arg value="75"/>
-        </exec> -->
 
     </target>
 
