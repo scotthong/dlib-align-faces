@@ -12,14 +12,11 @@ You can capture the JSON output and parse the JSON object to integrate with your
 ![bound boxes](https://github.com/scotthong/dlib-align-faces/blob/master/src/main/resources/face_chips.png)
 
 ## Supported platforms
+This project has been compiled successfully under the following platforms:
 
-Three pre-compiled binaries are distributed in the repository under **../src/main/bin/[platform]**.
-
-1. Linux/Ubuntu 14.04: Linux_x86_64
-2. Mac/OSX: mac_x86_64
-3. Windows/Windows 7: windows_x86_64
-
-You can always compile from the source to support your platform provided the required Dlib dependencies are met.
+1. Linux/Ubuntu
+2. Mac/OSX
+3. Windows
 
 ## How to compile
 
