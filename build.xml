@@ -136,8 +136,9 @@
 
         <echo message="executing align_faces from directory: ${run.dir}" />
 
+        <!-- <arg value="models/shape_predictor_68_face_landmarks.dat"/> -->
         <exec executable="${run.dir}/align_faces" spawn="false">
-            <arg value="models/shape_predictor_68_face_landmarks.dat"/>
+            <arg value="models/shape_predictor_5_face_landmarks.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
             <arg value="false"/>

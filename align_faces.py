@@ -35,7 +35,7 @@ from cStringIO import StringIO
 # align_faces model image_file image_size pyramid_up padding image_quality
 
 align_faces = 'target/align_faces'
-model = 'models/shape_predictor_68_face_landmarks.dat'
+model = 'models/shape_predictor_5_face_landmarks.dat'
 image_file = 'src/test/resources/g7_summit.jpg'
 image_size = 160
 pyramid_up = 'false'
