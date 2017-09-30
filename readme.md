@@ -48,7 +48,7 @@ ant build-all
 The "build-all" ant target execute the following tasks:
 
 1. Clone Dlib from github
-2. Checkout Dlib branch v19.4
+2. Checkout Dlib branch v19.7
 3. Update submodule if there is any
 4. Build **align_faces** using cmake.
 5. Copy **align_faces** to the corresponding target directory for distribution as pre-build binary.
@@ -58,7 +58,7 @@ The "build-all" ant target execute the following tasks:
 **align_faces** model imageFile imageSize pyramidUp padding imageQuality
 
 * model: The path to the shape model.
-    * models/shape_predictor_68_face_landmarks.dat
+    * models/shape_predictor_5_face_landmarks.dat
 * imageFile: The path to the image file.
     * src/test/resources/g7_summit.jpg
 * imageSize: The size of the image (Width and Height).
@@ -70,21 +70,17 @@ The "build-all" ant target execute the following tasks:
 * imageQuality: The quality value determines how lossy the compression is. Larger quality values result in larger output images but the images will look better.
     * 75
 
-### Run the pre-build align_faces
-
-This dlib-align-faces repository includes three pre-build **align_faces** binaries under "src/main/bin". These binaries are compiled using the optimization options as configured in the "build.xml" file. The binaries are compiled to support x86_64 processors that support SSE4 instructions. If your processor support AVX or better, please change the configuration and build the binaries yourself to take advantage of these instructions for better performance.
+### Run align_faces using pre-configured ANT target
 
 Please execute the following ant target to run the example:
 ```
 ant run
 ```
 
-If you build **align_faces** from source, you can execute the command below:
+Or after building **align_faces** from source, you can execute the following command:
 ```
-target/align_faces models/shape_predictor_68_face_landmarks.dat src/test/resources/g7_summit.jpg 160 target/g7_summit.jpg.align false 0.4 75
+target/align_faces models/shape_predictor_5_face_landmarks.dat src/test/resources/g7_summit.jpg 160 target/g7_summit.jpg.align false 0.4 75
 ```
-If you use the pre-build binary, please locate the binary under **../src/main/bin/[platform]** and use appropriate path to execute the command.
-
 
 Here is an example of the bounding boxes/rectangles exported as JSON to the console:
 ```
@@ -109,7 +105,7 @@ Here is an example of the bounding boxes/rectangles exported as JSON to the cons
 ```
 
 ### python integration demo
-A simple python script **align_faces.py** to integrate with the **align_faces** is included. Please use the following command run the python script. A figure of the image with the bounding boxes of the detected faces will be displayed. A separate figure with the extracted face chips will be displayed as well.
+A simple python script **align_faces.py** to integrate with the **align_faces** is also included. Please use the following command to run the python script. A figure of the image with the bounding boxes of the detected faces will be displayed. A separate figure with the extracted face chips will be displayed as well.
 ```
 python align_faces.py
 ```
@@ -118,4 +114,3 @@ python align_faces.py
 
 The shape model file distributed with this repository is downloaded from the [dlib-models github repository](https://github.com/davisking/dlib-models).
 
-A separate shape model trained using the dataset as detailed [here](https://github.com/davisking/dlib/issues/359) is also provided under the **../models** directory. The file size is much smaller. The performance difference as compared to the one provided by Dlib is yet to be validated! Please let me know if you run any comparison using these two shape models.
