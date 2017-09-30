@@ -3,7 +3,7 @@
     <property name="project.name" value="align_faces"/>
     <property name="build.dir" location="target"/>
     <property name="bin.dir" location="src/main/bin"/>
-    <property name="tag.version" value="v19.4"/>
+    <property name="tag.version" value="v19.7"/>
 
     <target name="readme">
         <echo message="This build script provide the following ANT target."/>
@@ -102,6 +102,7 @@
             <arg value="Visual Studio 14 2015 Win64"/>
             <!--
             <arg value="-DUSE_SSE4_INSTRUCTIONS=ON"/>
+            <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
             -->
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
         </exec>
@@ -136,13 +137,12 @@
 
         <echo message="executing align_faces from directory: ${run.dir}" />
 
-        <!-- <arg value="models/shape_predictor_68_face_landmarks.dat"/> -->
         <exec executable="${run.dir}/align_faces" spawn="false">
             <arg value="models/shape_predictor_5_face_landmarks.dat"/>
             <arg value="src/test/resources/g7_summit.jpg"/>
             <arg value="160"/>
             <arg value="false"/>
-            <arg value="0.36"/>
+            <arg value="0.4"/>
             <arg value="75"/>
         </exec>
 
