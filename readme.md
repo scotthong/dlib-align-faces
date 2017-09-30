@@ -14,8 +14,8 @@ You can capture the JSON output and parse the JSON object to integrate with your
 ## Supported platforms
 This project has been compiled successfully under the following platforms:
 
-1. Linux/Ubuntu
-2. Mac/OSX
+1. Linux(Ubuntu/CentOS)
+2. Mac OS X
 3. Windows
 
 ## How to compile
