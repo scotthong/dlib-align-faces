@@ -105,6 +105,7 @@
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
             -->
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
+            <arg value="-DDLIB_USE_CUDA=OFF"/>
         </exec>
     </target>
 
@@ -119,6 +120,7 @@
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
             -->
             <arg value="-DUSE_AVX_INSTRUCTIONS=ON"/>
+            <arg value="-DDLIB_USE_CUDA=OFF"/>
         </exec>
     </target>
 
